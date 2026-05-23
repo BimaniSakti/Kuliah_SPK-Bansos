@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}Eksplorasi Perangkingan - SPK Bansos Jabar{% endblock %}
+
+{% block content %}
+<div class="row mb-4 align-items-end">
+    <div class="col-md-8">
+        <span class="text-muted text-uppercase small font-monospace">DATA_STATUS: [FINALIZED] // VERSION: 2.43-BETA</span>
+        <h2 class="fw-bold text-dark mt-1">EKSPLORASI_PERANGKINGAN</h2>
+        <p class="text-secondary mb-0">Visualisasi data hasil *Simple Additive Weighting* (SAW) untuk penentuan prioritas bantuan sosial tingkat provinsi berdasarkan kriteria model terbaru.</p>
+    </div>
+    <div class="col-md-4 text-md-end mt-3 mt-md-0">
+        <button class="btn btn-outline-dark me-2"><i class="bi bi-file-earmark-pdf"></i> Cetak PDF</button>
+        <button class="btn btn-outline-success"><i class="bi bi-file-earmark-excel"></i> Export Excel</button>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm p-3 mb-4 bg-white">
+    <div class="row g-3 align-items-center">
+        <div class="col-md-6">
+            <div class="input-group">
+                <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
+                <input type="text" class="form-control bg-light border-0" placeholder="Cari nama kabupaten atau kota...">
+            </div>
+        </div>
+        <div class="col-md-4">
+            <span class="badge bg-dark p-2 rounded-3 me-2">FILTER: PRIORITAS TINGGI <i class="bi bi-x-circle ms-1"></i></span>
+        </div>
+        <div class="col-md-2 text-end">
+            <button class="btn btn-light w-100"><i class="bi bi-sliders"></i> Advanced</button>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-5 bg-white">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-dark">
+                <tr>
+                    <th class="ps-4">NO.</th>
+                    <th>PROVINSI</th>
+                    <th>KAB/KOTA</th>
+                    <th>SKOR SAW (PREFERENSI)</th>
+                    <th class="pe-4">KATEGORI PRIORITAS</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="ps-4 fw-bold">01</td>
+                    <td>JAWA BARAT</td>
+                    <td>KAB. KUNINGAN</td>
+                    <td class="font-monospace fw-bold text-primary">0.8942</td>
+                    <td class="pe-4"><span class="badge bg-danger px-3 py-2 text-uppercase">Prioritas Tinggi</span></td>
+                </tr>
+                <tr>
+                    <td class="ps-4 fw-bold">02</td>
+                    <td>JAWA BARAT</td>
+                    <td>KAB. CIANJUR</td>
+                    <td class="font-monospace fw-bold text-primary">0.8615</td>
+                    <td class="pe-4"><span class="badge bg-danger px-3 py-2 text-uppercase">Prioritas Tinggi</span></td>
+                </tr>
+                <tr>
+                    <td class="ps-4 fw-bold">03</td>
+                    <td>JAWA BARAT</td>
+                    <td>KAB. BANDUNG BARAT</td>
+                    <td class="font-monospace fw-bold text-primary">0.8422</td>
+                    <td class="pe-4"><span class="badge bg-danger px-3 py-2 text-uppercase">Prioritas Tinggi</span></td>
+                </tr>
+                <tr>
+                    <td class="ps-4 fw-bold">04</td>
+                    <td>JAWA BARAT</td>
+                    <td>KAB. TASIKMALAYA</td>
+                    <td class="font-monospace fw-bold text-primary">0.7281</td>
+                    <td class="pe-4"><span class="badge bg-warning text-dark px-3 py-2 text-uppercase">Prioritas Sedang</span></td>
+                </tr>
+                <tr>
+                    <td class="ps-4 fw-bold">05</td>
+                    <td>JAWA BARAT</td>
+                    <td>KOTA BEKASI</td>
+                    <td class="font-monospace fw-bold text-primary">0.3108</td>
+                    <td class="pe-4"><span class="badge bg-success px-3 py-2 text-uppercase">Prioritas Rendah</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 bg-white">
+            <h6 class="fw-bold text-uppercase small text-muted mb-3">TECHNICAL_NOTATION_01 // WEIGHTING LOGIC</h6>
+            <p class="small text-secondary mb-0">Kriteria yang digunakan mencakup indeks kemiskinan (P0), tingkat pengangguran terbuka (TPT), dan sarana infrastruktur dasar sanitasi & air layak. Normalisasi matriks didasarkan pada karakter manfaat (*benefit*) dan biaya (*cost*).</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 bg-white">
+            <h6 class="fw-bold text-uppercase small text-muted mb-3">STRUCTURAL_LAYER_02 // GEOSPATIAL RELATION</h6>
+            <p class="small text-secondary mb-0">Data spasial diintegrasikan untuk meminimalkan duplikasi penerima antar wilayah administratif yang berbatasan langsung secara kewilayahan di Provinsi Jawa Barat.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 bg-white">
+            <h6 class="fw-bold text-uppercase small text-muted mb-3">VALIDATION_NOTE_03 // EVALUASI MODEL</h6>
+            <div class="d-flex justify-content-between small text-secondary mb-1">
+                <span>Confidence Interval:</span><span class="fw-bold text-dark">95.2%</span>
+            </div>
+            <div class="d-flex justify-content-between small text-secondary mb-1">
+                <span>Error Margin:</span><span class="fw-bold text-dark">+/- 1.4%</span>
+            </div>
+            <div class="d-flex justify-content-between small text-secondary">
+                <span>Sample Size:</span><span class="fw-bold text-dark">27 Regencies</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

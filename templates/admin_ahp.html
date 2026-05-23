@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block title %}Konfigurasi Kriteria AHP - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <span class="text-muted text-uppercase small font-monospace">METRIC_SET // SYSTEM_WEIGHTING</span>
+        <h2 class="fw-bold text-dark mt-1">KONFIGURASI KRITERIA & AHP</h2>
+        <p class="text-secondary">Penentuan bobot kriteria menggunakan metode *Analytic Hierarchy Process* (AHP). Tentukan sifat kriteria (*Benefit/Cost*) dan lakukan perbandingan berpasangan (*Pairwise Comparison*) untuk menghitung nilai konsistensi.</p>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm p-4 bg-white rounded-4">
+            <h6 class="fw-bold text-dark mb-3">01. DAFTAR_KRITERIA</h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-borderless align-middle small">
+                    <thead>
+                        <tr class="border-bottom font-monospace text-muted text-uppercase">
+                            <th>ID</th>
+                            <th>NAMA KRITERIA</th>
+                            <th>SIPAT</th>
+                            <th>BOBOT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-bottom">
+                            <td class="font-monospace">C01</td>
+                            <td class="fw-bold">Persentase Penduduk Miskin (P0)</td>
+                            <td><span class="badge bg-danger">COST</span></td>
+                            <td class="font-monospace fw-bold">0.345</td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="font-monospace">C02</td>
+                            <td class="fw-bold">Rata-rata Lama Sekolah</td>
+                            <td><span class="badge bg-success">BENEFIT</span></td>
+                            <td class="font-monospace fw-bold">0.182</td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="font-monospace">C03</td>
+                            <td class="fw-bold">Pengeluaran per Kapita</td>
+                            <td><span class="badge bg-success">BENEFIT</span></td>
+                            <td class="font-monospace fw-bold">0.110</td>
+                        </tr>
+                        <tr class="border-bottom">
+                            <td class="font-monospace">C04</td>
+                            <td class="fw-bold">Tingkat Pengangguran</td>
+                            <td><span class="badge bg-danger">COST</span></td>
+                            <td class="font-monospace fw-bold">0.095</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="alert alert-success p-2 mt-3 mb-0 d-flex justify-content-between align-items-center font-monospace small">
+                <span>CONSISTENCY RATIO (CR):</span>
+                <span class="fw-bold">0.042 <i class="bi bi-check-circle-fill"></i></span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm p-4 bg-white rounded-4 h-100">
+            <h6 class="fw-bold text-dark mb-4">02. PERBANDINGAN_BERPASANGAN</h6>
+            
+            <div class="mb-4">
+                <div class="d-flex justify-content-between small fw-bold text-secondary mb-2">
+                    <span>P0 (Penduduk Miskin)</span>
+                    <span>Rata-rata Lama Sekolah</span>
+                </div>
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check" name="pair1" id="p1_9">
+                    <label class="btn btn-outline-secondary btn-sm" for="p1_9">9</label>
+                    <input type="radio" class="btn-check" name="pair1" id="p1_5">
+                    <label class="btn btn-outline-secondary btn-sm" for="p1_5">5</label>
+                    <input type="radio" class="btn-check" name="pair1" id="p1_1" checked>
+                    <label class="btn btn-primary btn-sm" for="p1_1">1</label>
+                    <input type="radio" class="btn-check" name="pair1" id="p1_e5">
+                    <label class="btn btn-outline-secondary btn-sm" for="p1_e5">5</label>
+                    <input type="radio" class="btn-check" name="pair1" id="p1_e9">
+                    <label class="btn btn-outline-secondary btn-sm" for="p1_e9">9</label>
+                </div>
+            </div>
+
+            <div class="mb-5">
+                <div class="d-flex justify-content-between small fw-bold text-secondary mb-2">
+                    <span>P0 (Penduduk Miskin)</span>
+                    <span>Pengeluaran per Kapita</span>
+                </div>
+                <div class="btn-group w-100" role="group">
+                    <input type="radio" class="btn-check" name="pair2" id="p2_9">
+                    <label class="btn btn-outline-secondary btn-sm" for="p2_9">9</label>
+                    <input type="radio" class="btn-check" name="pair2" id="p2_5" checked>
+                    <label class="btn btn-primary btn-sm" for="p2_5">5</label>
+                    <input type="radio" class="btn-check" name="pair2" id="p2_1">
+                    <label class="btn btn-outline-secondary btn-sm" for="p2_1">1</label>
+                    <input type="radio" class="btn-check" name="pair2" id="p2_e5">
+                    <label class="btn btn-outline-secondary btn-sm" for="p2_e5">5</label>
+                    <input type="radio" class="btn-check" name="pair2" id="p2_e9">
+                    <label class="btn btn-outline-secondary btn-sm" for="p2_e9">9</label>
+                </div>
+            </div>
+            
+            <div class="d-flex gap-2 mt-auto">
+                <button class="btn btn-secondary w-50"><i class="bi bi-calculator"></i> Calculate Weights</button>
+                <button class="btn btn-dark w-50"><i class="bi bi-hdd-fill"></i> Save Configuration</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

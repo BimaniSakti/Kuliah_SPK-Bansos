@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard Statistik - SPK Bansos Jabar{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <span class="text-muted text-uppercase small font-monospace">System_Admin // Dashboard</span>
+        <h2 class="fw-bold text-dark mt-1">STATISTIK DISTRIBUSI BANSOS</h2>
+        <p class="text-secondary">Transparansi alokasi bantuan sosial berdasarkan sistem pendukung keputusan. Data diperbarui secara real-time berdasarkan validasi lapangan di tiap sektor.</p>
+    </div>
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-4 rounded-4 bg-white">
+            <div class="d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 p-3 rounded-3 text-primary me-3">
+                    <i class="bi bi-geo-alt-fill fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 text-uppercase small fw-bold">Total Wilayah Jabar</h6>
+                    <h2 class="fw-bold m-0 text-dark">27</h2>
+                    <small class="text-secondary">Kabupaten & Kota</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-4 rounded-4 bg-white">
+            <div class="d-flex align-items-center">
+                <div class="bg-danger bg-opacity-10 p-3 rounded-3 text-danger me-3">
+                    <i class="bi bi-exclamation-triangle-fill fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 text-uppercase small fw-bold">Prioritas Tinggi</h6>
+                    <h2 class="fw-bold m-0 text-danger">8</h2>
+                    <small class="text-secondary">Butuh Penanganan Segera</small>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-4 rounded-4 bg-white">
+            <div class="d-flex align-items-center">
+                <div class="bg-success bg-opacity-10 p-3 rounded-3 text-success me-3">
+                    <i class="bi bi-people-fill fs-3"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-1 text-uppercase small fw-bold">Total Data Latihan</h6>
+                    <h2 class="fw-bold m-0 text-dark">514</h2>
+                    <small class="text-secondary">Baris Data Nasional (Kaggle)</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm p-4 rounded-4 h-100 bg-white">
+            <h5 class="fw-bold text-dark mb-4">Prioritas Bantuan Sektor Wilayah</h5>
+            <div style="position: relative; height:300px;">
+                <canvas id="chartDistribusi"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm p-4 rounded-4 h-100 bg-white text-center d-flex flex-column justify-content-center align-items-center">
+            <div class="border border-2 border-dashed rounded-4 p-5 w-100 h-100 d-flex flex-column justify-content-center align-items-center bg-light">
+                <i class="bi bi-map-fill text-secondary display-4 mb-3"></i>
+                <h5 class="fw-bold text-dark">MAP_REGION_01</h5>
+                <p class="text-muted small px-3">Visualisasi Geospasial Klaster Kemiskinan Jawa Barat</p>
+                <span class="badge bg-dark font-monospace mt-2">COORD: JABAR_114.0000</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('chartDistribusi').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['Prioritas Tinggi (Klaster 0)', 'Prioritas Sedang (Klaster 1)', 'Prioritas Rendah (Klaster 2)'],
+            datasets: [{
+                label: 'Jumlah Kabupaten/Kota',
+                data: [8, 12, 7], // Angka dummy sebaran Jabar
+                backgroundColor: ['#dc3545', '#ffc107', '#198754'],
+                borderRadius: 8,
+                barThickness: 40
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false }
+            },
+            scales: {
+                y: { beginAtZero: true, grid: { display: false } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+</script>
+{% endblock %}
