@@ -20,7 +20,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-1 text-uppercase small fw-bold">Total Wilayah Jabar</h6>
-                    <h2 class="fw-bold m-0 text-dark">27</h2>
+                    <h2 class="fw-bold m-0 text-dark">{{ total_jabar }}</h2>
                     <small class="text-secondary">Kabupaten & Kota</small>
                 </div>
             </div>
@@ -34,7 +34,7 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-1 text-uppercase small fw-bold">Prioritas Tinggi</h6>
-                    <h2 class="fw-bold m-0 text-danger">8</h2>
+                    <h2 class="fw-bold m-0 text-danger">{{ tinggi }}</h2>
                     <small class="text-secondary">Butuh Penanganan Segera</small>
                 </div>
             </div>
@@ -48,8 +48,8 @@
                 </div>
                 <div>
                     <h6 class="text-muted mb-1 text-uppercase small fw-bold">Total Data Latihan</h6>
-                    <h2 class="fw-bold m-0 text-dark">514</h2>
-                    <small class="text-secondary">Baris Data Nasional (Kaggle)</small>
+                    <h2 class="fw-bold m-0 text-dark">{{ total_nasional }}</h2>
+                    <small class="text-secondary">Baris Data Nasional</small>
                 </div>
             </div>
         </div>
@@ -84,10 +84,10 @@
     new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: ['Prioritas Tinggi (Klaster 0)', 'Prioritas Sedang (Klaster 1)', 'Prioritas Rendah (Klaster 2)'],
+            labels: ['Prioritas Tinggi', 'Prioritas Sedang', 'Prioritas Rendah'],
             datasets: [{
-                label: 'Jumlah Kabupaten/Kota',
-                data: [8, 12, 7], // Angka dummy sebaran Jabar
+                label: 'Jumlah Wilayah',
+                data: [{{ tinggi }}, {{ sedang }}, {{ rendah }}], 
                 backgroundColor: ['#dc3545', '#ffc107', '#198754'],
                 borderRadius: 8,
                 barThickness: 40
@@ -100,7 +100,7 @@
                 legend: { display: false }
             },
             scales: {
-                y: { beginAtZero: true, grid: { display: false } },
+                y: { beginAtZero: true, grid: { display: false }, ticks: { stepSize: 1 } },
                 x: { grid: { display: false } }
             }
         }

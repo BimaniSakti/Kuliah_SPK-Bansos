@@ -45,41 +45,23 @@
                 </tr>
             </thead>
             <tbody>
+                {% for row in data_wilayah %}
                 <tr>
-                    <td class="ps-4 fw-bold">01</td>
-                    <td>JAWA BARAT</td>
-                    <td>KAB. KUNINGAN</td>
-                    <td class="font-monospace fw-bold text-primary">0.8942</td>
-                    <td class="pe-4"><span class="badge bg-danger px-3 py-2 text-uppercase">Prioritas Tinggi</span></td>
+                    <td class="ps-4 fw-bold">{{ loop.index }}</td>
+                    <td>{{ row['Provinsi'] }}</td>
+                    <td>{{ row['Kab/Kota'] }}</td>
+                    <td class="font-monospace fw-bold text-primary">{{ row['Skor_SAW'] }}</td>
+                    <td class="pe-4">
+                        {% if row['Kategori_Prioritas'] == 'Prioritas Tinggi' %}
+                            <span class="badge bg-danger px-3 py-2 text-uppercase">{{ row['Kategori_Prioritas'] }}</span>
+                        {% elif row['Kategori_Prioritas'] == 'Prioritas Sedang' %}
+                            <span class="badge bg-warning text-dark px-3 py-2 text-uppercase">{{ row['Kategori_Prioritas'] }}</span>
+                        {% else %}
+                            <span class="badge bg-success px-3 py-2 text-uppercase">{{ row['Kategori_Prioritas'] }}</span>
+                        {% endif %}
+                    </td>
                 </tr>
-                <tr>
-                    <td class="ps-4 fw-bold">02</td>
-                    <td>JAWA BARAT</td>
-                    <td>KAB. CIANJUR</td>
-                    <td class="font-monospace fw-bold text-primary">0.8615</td>
-                    <td class="pe-4"><span class="badge bg-danger px-3 py-2 text-uppercase">Prioritas Tinggi</span></td>
-                </tr>
-                <tr>
-                    <td class="ps-4 fw-bold">03</td>
-                    <td>JAWA BARAT</td>
-                    <td>KAB. BANDUNG BARAT</td>
-                    <td class="font-monospace fw-bold text-primary">0.8422</td>
-                    <td class="pe-4"><span class="badge bg-danger px-3 py-2 text-uppercase">Prioritas Tinggi</span></td>
-                </tr>
-                <tr>
-                    <td class="ps-4 fw-bold">04</td>
-                    <td>JAWA BARAT</td>
-                    <td>KAB. TASIKMALAYA</td>
-                    <td class="font-monospace fw-bold text-primary">0.7281</td>
-                    <td class="pe-4"><span class="badge bg-warning text-dark px-3 py-2 text-uppercase">Prioritas Sedang</span></td>
-                </tr>
-                <tr>
-                    <td class="ps-4 fw-bold">05</td>
-                    <td>JAWA BARAT</td>
-                    <td>KOTA BEKASI</td>
-                    <td class="font-monospace fw-bold text-primary">0.3108</td>
-                    <td class="pe-4"><span class="badge bg-success px-3 py-2 text-uppercase">Prioritas Rendah</span></td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
@@ -109,6 +91,9 @@
             </div>
             <div class="d-flex justify-content-between small text-secondary">
                 <span>Sample Size:</span><span class="fw-bold text-dark">27 Regencies</span>
+            </div>
+            <div class="d-flex justify-content-between small text-secondary mb-1">
+                <span>Silhouette Score:</span><span class="fw-bold text-dark">{{ sil_score }}</span>
             </div>
         </div>
     </div>

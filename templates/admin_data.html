@@ -10,7 +10,7 @@
     </div>
     <div class="col-md-6 text-md-end">
         <button class="btn btn-outline-primary me-2"><i class="bi bi-cloud-upload"></i> Import CSV Dataset</button>
-        <button class="btn btn-primary"><i class="bi bi-plus-circle"></i> Tambah Data Manual</button>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah"><i class="bi bi-plus-circle"></i> Tambah Data Manual</button>
     </div>
 </div>
 
@@ -68,50 +68,83 @@
                 </tr>
             </thead>
             <tbody>
+                {% for row in data_wilayah %}
                 <tr>
-                    <td class="text-start ps-4 fw-bold text-dark">KAB. KUNINGAN</td>
-                    <td>12.82%</td>
-                    <td>8.11</td>
-                    <td>9,120</td>
-                    <td>72.4</td>
-                    <td>68.5</td>
-                    <td>82%</td>
-                    <td>91%</td>
+                    <td class="text-start ps-4 fw-bold text-dark">{{ row['Kab/Kota'] }} <br><small class="text-muted fw-normal">{{ row['Provinsi'] }}</small></td>
+                    <td>{{ row['P0'] }}%</td>
+                    <td>{{ row['Lama_Sekolah'] }}</td>
+                    <td>{{ "{:,.0f}".format(row['Pengeluaran']) }}</td>
+                    <td>{{ row['IPM'] }}</td>
+                    <td>{{ row['Harapan_Hidup'] }}</td>
+                    <td>{{ row['Sanitasi'] }}%</td>
+                    <td>{{ row['Air_Minum'] }}%</td>
                     <td class="pe-4">
-                        <button class="btn btn-sm btn-link text-decoration-none text-primary p-0 me-2">EDIT</button>
-                        <button class="btn btn-sm btn-link text-decoration-none text-danger p-0">HAPUS</button>
+                        <div class="d-flex justify-content-end">
+                            <button class="btn btn-sm btn-link text-decoration-none text-primary p-0 me-3">EDIT</button>
+                            <form action="/admin/hapus/{{ row['Kab/Kota'] }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data {{ row['Kab/Kota'] }}?');">
+                                <button type="submit" class="btn btn-sm btn-link text-decoration-none text-danger p-0">HAPUS</button>
+                            </form>
+                        </div>
                     </td>
                 </tr>
-                <tr>
-                    <td class="text-start ps-4 fw-bold text-dark">KAB. CIANJUR</td>
-                    <td>11.05%</td>
-                    <td>7.32</td>
-                    <td>8,950</td>
-                    <td>68.1</td>
-                    <td>66.2</td>
-                    <td>74%</td>
-                    <td>85%</td>
-                    <td class="pe-4">
-                        <button class="btn btn-sm btn-link text-decoration-none text-primary p-0 me-2">EDIT</button>
-                        <button class="btn btn-sm btn-link text-decoration-none text-danger p-0">HAPUS</button>
-                    </td>
-                </tr>
-                <tr class="table-active">
-                    <td class="text-start ps-4 fw-bold text-dark">KAB. BANDUNG BARAT</td>
-                    <td>10.51%</td>
-                    <td>8.45</td>
-                    <td>10,210</td>
-                    <td>71.5</td>
-                    <td>67.2</td>
-                    <td>80%</td>
-                    <td>88%</td>
-                    <td class="pe-4">
-                        <button class="btn btn-sm btn-link text-decoration-none text-white bg-primary px-2 rounded-2 me-2 small">EDIT</button>
-                        <button class="btn btn-sm btn-link text-decoration-none text-danger p-0">HAPUS</button>
-                    </td>
-                </tr>
+                {% endfor %}
             </tbody>
         </table>
+    </div>
+</div>
+
+<div class="modal fade" id="modalTambah" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold">Tambah Data Wilayah Baru</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/admin/tambah" method="POST">
+                <div class="modal-body row g-3 p-4">
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted fw-bold">PROVINSI</label>
+                        <input type="text" class="form-control" name="provinsi" value="JAWA BARAT" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small text-muted fw-bold">KABUPATEN / KOTA</label>
+                        <input type="text" class="form-control" name="kab_kota" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted fw-bold">P0 (Kemiskinan %)</label>
+                        <input type="number" step="any" class="form-control" name="p0" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted fw-bold">LAMA SEKOLAH</label>
+                        <input type="number" step="any" class="form-control" name="lama_sekolah">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small text-muted fw-bold">PENGELUARAN (Rp)</label>
+                        <input type="number" step="any" class="form-control" name="pengeluaran">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted fw-bold">IPM</label>
+                        <input type="number" step="any" class="form-control" name="ipm">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted fw-bold">HARAPAN HIDUP</label>
+                        <input type="number" step="any" class="form-control" name="harapan_hidup">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted fw-bold">SANITASI (%)</label>
+                        <input type="number" step="any" class="form-control" name="sanitasi">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small text-muted fw-bold">AIR MINUM (%)</label>
+                        <input type="number" step="any" class="form-control" name="air_minum">
+                    </div>
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Simpan Data</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

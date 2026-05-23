@@ -64,48 +64,90 @@
         <div class="card border-0 shadow-sm p-4 bg-white rounded-4 h-100">
             <h6 class="fw-bold text-dark mb-4">02. PERBANDINGAN_BERPASANGAN</h6>
             
-            <div class="mb-4">
-                <div class="d-flex justify-content-between small fw-bold text-secondary mb-2">
-                    <span>P0 (Penduduk Miskin)</span>
-                    <span>Rata-rata Lama Sekolah</span>
+            <form method="POST" action="/admin/ahp">
+                
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between small fw-bold text-secondary mb-2">
+                        <span>P0 (Penduduk Miskin)</span>
+                        <span>Rata-rata Lama Sekolah</span>
+                    </div>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="pair1" id="p1_9" value="9">
+                        <label class="btn btn-outline-secondary btn-sm" for="p1_9">9</label>
+                        <input type="radio" class="btn-check" name="pair1" id="p1_5" value="5">
+                        <label class="btn btn-outline-secondary btn-sm" for="p1_5">5</label>
+                        <input type="radio" class="btn-check" name="pair1" id="p1_1" value="1" checked>
+                        <label class="btn btn-primary btn-sm" for="p1_1">1</label>
+                        <input type="radio" class="btn-check" name="pair1" id="p1_e5" value="0.2">
+                        <label class="btn btn-outline-secondary btn-sm" for="p1_e5">1/5</label>
+                        <input type="radio" class="btn-check" name="pair1" id="p1_e9" value="0.1111">
+                        <label class="btn btn-outline-secondary btn-sm" for="p1_e9">1/9</label>
+                    </div>
                 </div>
-                <div class="btn-group w-100" role="group">
-                    <input type="radio" class="btn-check" name="pair1" id="p1_9">
-                    <label class="btn btn-outline-secondary btn-sm" for="p1_9">9</label>
-                    <input type="radio" class="btn-check" name="pair1" id="p1_5">
-                    <label class="btn btn-outline-secondary btn-sm" for="p1_5">5</label>
-                    <input type="radio" class="btn-check" name="pair1" id="p1_1" checked>
-                    <label class="btn btn-primary btn-sm" for="p1_1">1</label>
-                    <input type="radio" class="btn-check" name="pair1" id="p1_e5">
-                    <label class="btn btn-outline-secondary btn-sm" for="p1_e5">5</label>
-                    <input type="radio" class="btn-check" name="pair1" id="p1_e9">
-                    <label class="btn btn-outline-secondary btn-sm" for="p1_e9">9</label>
-                </div>
-            </div>
 
-            <div class="mb-5">
-                <div class="d-flex justify-content-between small fw-bold text-secondary mb-2">
-                    <span>P0 (Penduduk Miskin)</span>
-                    <span>Pengeluaran per Kapita</span>
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between small fw-bold text-secondary mb-2">
+                        <span>P0 (Penduduk Miskin)</span>
+                        <span>Pengeluaran per Kapita</span>
+                    </div>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="pair2" id="p2_9" value="9">
+                        <label class="btn btn-outline-secondary btn-sm" for="p2_9">9</label>
+                        <input type="radio" class="btn-check" name="pair2" id="p2_5" value="5" checked>
+                        <label class="btn btn-primary btn-sm" for="p2_5">5</label>
+                        <input type="radio" class="btn-check" name="pair2" id="p2_1" value="1">
+                        <label class="btn btn-outline-secondary btn-sm" for="p2_1">1</label>
+                        <input type="radio" class="btn-check" name="pair2" id="p2_e5" value="0.2">
+                        <label class="btn btn-outline-secondary btn-sm" for="p2_e5">1/5</label>
+                        <input type="radio" class="btn-check" name="pair2" id="p2_e9" value="0.1111">
+                        <label class="btn btn-outline-secondary btn-sm" for="p2_e9">1/9</label>
+                    </div>
                 </div>
-                <div class="btn-group w-100" role="group">
-                    <input type="radio" class="btn-check" name="pair2" id="p2_9">
-                    <label class="btn btn-outline-secondary btn-sm" for="p2_9">9</label>
-                    <input type="radio" class="btn-check" name="pair2" id="p2_5" checked>
-                    <label class="btn btn-primary btn-sm" for="p2_5">5</label>
-                    <input type="radio" class="btn-check" name="pair2" id="p2_1">
-                    <label class="btn btn-outline-secondary btn-sm" for="p2_1">1</label>
-                    <input type="radio" class="btn-check" name="pair2" id="p2_e5">
-                    <label class="btn btn-outline-secondary btn-sm" for="p2_e5">5</label>
-                    <input type="radio" class="btn-check" name="pair2" id="p2_e9">
-                    <label class="btn btn-outline-secondary btn-sm" for="p2_e9">9</label>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between small fw-bold text-secondary mb-2">
+                        <span>Rata-rata Lama Sekolah</span>
+                        <span>Pengeluaran per Kapita</span>
+                    </div>
+                    <div class="btn-group w-100" role="group">
+                        <input type="radio" class="btn-check" name="pair3" id="p3_9" value="9">
+                        <label class="btn btn-outline-secondary btn-sm" for="p3_9">9</label>
+                        <input type="radio" class="btn-check" name="pair3" id="p3_5" value="5">
+                        <label class="btn btn-outline-secondary btn-sm" for="p3_5">5</label>
+                        <input type="radio" class="btn-check" name="pair3" id="p3_1" value="1" checked>
+                        <label class="btn btn-primary btn-sm" for="p3_1">1</label>
+                        <input type="radio" class="btn-check" name="pair3" id="p3_e5" value="0.2">
+                        <label class="btn btn-outline-secondary btn-sm" for="p3_e5">1/5</label>
+                        <input type="radio" class="btn-check" name="pair3" id="p3_e9" value="0.1111">
+                        <label class="btn btn-outline-secondary btn-sm" for="p3_e9">1/9</label>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-2 mt-auto">
+                    <button type="submit" class="btn btn-secondary w-50"><i class="bi bi-calculator"></i> Calculate Weights</button>
+                    <button type="button" class="btn btn-dark w-50"><i class="bi bi-hdd-fill"></i> Save Configuration</button>
+                </div>
+            </form>
+
+            {% if ahp_result %}
+            <div class="alert alert-{{ 'success' if ahp_result.is_consistent else 'danger' }} mt-4 mb-0">
+                <h6 class="fw-bold mb-2"><i class="bi bi-clipboard-data"></i> HASIL KALKULASI MATRIKS</h6>
+                <ul class="mb-2 small font-monospace">
+                    <li>Bobot P0: {{ (ahp_result.weights[0] * 100)|round(2) }}%</li>
+                    <li>Bobot Lama Sekolah: {{ (ahp_result.weights[1] * 100)|round(2) }}%</li>
+                    <li>Bobot Pengeluaran: {{ (ahp_result.weights[2] * 100)|round(2) }}%</li>
+                </ul>
+                <div class="d-flex justify-content-between align-items-center border-top pt-2 mt-2 font-monospace small">
+                    <span>Consistency Ratio (CR): <span class="fw-bold">{{ ahp_result.consistency_ratio }}</span></span>
+                    {% if ahp_result.is_consistent %}
+                        <span class="badge bg-success">KONSISTEN <i class="bi bi-check-circle-fill"></i></span>
+                    {% else %}
+                        <span class="badge bg-danger">TIDAK KONSISTEN <i class="bi bi-x-circle-fill"></i></span>
+                    {% endif %}
                 </div>
             </div>
+            {% endif %}
             
-            <div class="d-flex gap-2 mt-auto">
-                <button class="btn btn-secondary w-50"><i class="bi bi-calculator"></i> Calculate Weights</button>
-                <button class="btn btn-dark w-50"><i class="bi bi-hdd-fill"></i> Save Configuration</button>
-            </div>
         </div>
     </div>
 </div>

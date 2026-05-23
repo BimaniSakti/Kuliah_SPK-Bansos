@@ -44,7 +44,11 @@
                     <div class="progress-bar bg-warning" role="progressbar" style="width: 100%"></div>
                 </div>
             </div>
-            <button class="btn btn-warning w-100 fw-bold py-2 text-dark">START_KMEANS_TRAINING</button>
+            <form action="/admin/run_pipeline" method="POST">
+                <button type="submit" class="btn btn-warning w-100 fw-bold py-2 text-dark">
+                    <i class="bi bi-play-circle-fill"></i> JALANKAN FULL PIPELINE (SAW + K-MEANS)
+                </button>
+            </form>
         </div>
     </div>
     
