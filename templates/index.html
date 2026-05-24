@@ -3,31 +3,45 @@
 {% block title %}Beranda - SPK Bansos Jabar{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+<style>
+    #map {
+        /* Mencegah peta menutupi dropdown/navbar */
+        z-index: 1; 
+    }
+    .map-container {
+        /* Memberikan bingkai putih yang elegan di sekitar peta */
+        background: #ffffff;
+        padding: 8px;
+        border-radius: 1rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.05);
+        border: 1px solid #dee2e6;
+    }
+</style>
+
 <div class="row align-items-center py-5">
-    <div class="col-lg-6">
-        <span class="badge bg-secondary mb-3 px-3 py-2">Sistem Analisis Prioritas Bansos Berbasis Data Terintegrasi</span>
-        <h1 class="display-4 fw-bold text-dark mb-4">
-            Sistem Penentuan <br>Prioritas Bansos <br>Jawa Barat
-        </h1>
+    <div class="col-lg-5 mb-5 mb-lg-0">
+        <span class="badge bg-primary bg-opacity-10 text-primary mb-3 px-3 py-2 fw-bold text-uppercase">
+            <i class="bi bi-geo-alt-fill"></i> Pemetaan Geospasial
+        </span>
+        <h1 class="display-5 fw-bold text-dark mb-4">Sistem Prioritas<br>Bansos Jawa Barat</h1>
         <p class="lead text-secondary mb-4">
-            Sebuah kerangka kerja teknis untuk memastikan distribusi bantuan sosial yang presisi, transparan, dan akuntabel berbasis model pengambilan keputusan multikriteria di wilayah Jawa Barat.
+            Sebuah kerangka kerja teknis untuk memastikan distribusi bantuan sosial yang presisi, transparan, dan akuntabel berbasis model pengambilan keputusan multikriteria.
         </p>
         <div class="d-grid gap-2 d-md-flex justify-content-md-start">
             <a href="/ranking" class="btn btn-primary btn-lg px-4 me-md-2">
-                Lihat Hasil Perangkingan <i class="bi bi-arrow-right"></i>
+                Lihat Ranking <i class="bi bi-arrow-right"></i>
             </a>
             <a href="#metodologi" class="btn btn-outline-secondary btn-lg px-4">
-                Metodologi AHP
+                Pelajari Algoritma
             </a>
         </div>
     </div>
     
-    <div class="col-lg-6 mt-5 mt-lg-0">
-        <div class="bg-white p-5 rounded-4 shadow-sm border text-center" style="height: 400px; display: flex; align-items: center; justify-content: center;">
-            <div class="text-muted">
-                <i class="bi bi-map display-1"></i>
-                <p class="mt-3">Peta Digital Distribusi Bansos</p>
-            </div>
+    <div class="col-lg-7">
+        <div class="map-container">
+            <div id="map" style="height: 450px; width: 100%; border-radius: 0.75rem;"></div>
         </div>
     </div>
 </div>
@@ -37,33 +51,57 @@
         <div class="card h-100 border-0 shadow-sm p-3">
             <div class="card-body">
                 <h5 class="card-title fw-bold mb-3">KEADILAN TERUKUR</h5>
-                <p class="card-text text-secondary">
-                    Menghilangkan subjektivitas dalam penentuan penerima bantuan melalui pembobotan kriteria teknis (P0, IPM, PDRB) yang divalidasi secara sistemik.
-                </p>
+                <p class="card-text text-secondary">Menghilangkan subjektivitas dalam penentuan penerima bantuan melalui pembobotan kriteria teknis (P0, IPM, PDRB) dengan metode AHP.</p>
             </div>
         </div>
     </div>
-    
     <div class="col-md-4">
         <div class="card h-100 border-0 shadow-sm p-3">
             <div class="card-body">
                 <h5 class="card-title fw-bold mb-3">EFISIENSI FISKAL</h5>
-                <p class="card-text text-secondary">
-                    Optimalisasi alokasi dana bantuan sosial dengan menargetkan klaster wilayah dengan indeks urgensi tertinggi menggunakan K-Means Clustering.
-                </p>
+                <p class="card-text text-secondary">Optimalisasi alokasi dana bantuan sosial dengan menargetkan klaster wilayah urgensi tertinggi menggunakan K-Means Clustering.</p>
             </div>
         </div>
     </div>
-    
     <div class="col-md-4">
         <div class="card h-100 border-0 shadow-sm p-3">
             <div class="card-body">
                 <h5 class="card-title fw-bold mb-3">TRANSPARANSI DATA</h5>
-                <p class="card-text text-secondary">
-                    Seluruh proses perangkingan dapat diaudit secara publik untuk menjaga kepercayaan masyarakat terhadap integritas sistem.
-                </p>
+                <p class="card-text text-secondary">Seluruh proses perhitungan SAW dan perangkingan dapat diaudit secara publik untuk menjaga integritas sistem.</p>
             </div>
         </div>
     </div>
 </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    // Menunggu seluruh elemen HTML selesai dimuat sebelum merender peta
+    document.addEventListener("DOMContentLoaded", function() {
+        // Koordinat tengah Jawa Barat
+        var map = L.map('map').setView([-6.9175, 107.6191], 8);
+
+        // Menggunakan tile CartoDB Positron agar desain peta lebih bersih & modern (cocok untuk dashboard UI)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(map);
+
+        // Menambahkan penanda (marker) dummy
+        var marker1 = L.marker([-6.9175, 107.6191]).addTo(map)
+            .bindPopup("<div class='text-center'><b>Kota Bandung</b><br><span class='badge bg-warning text-dark mt-1'>Prioritas Sedang</span></div>");
+            
+        var marker2 = L.marker([-6.9763, 108.4764]).addTo(map)
+            .bindPopup("<div class='text-center'><b>Kab. Kuningan</b><br><span class='badge bg-danger mt-1'>Prioritas Tinggi</span></div>");
+            
+        var marker3 = L.marker([-6.2333, 106.9833]).addTo(map)
+            .bindPopup("<div class='text-center'><b>Kota Bekasi</b><br><span class='badge bg-success mt-1'>Prioritas Rendah</span></div>");
+            
+        // Trik khusus: Memaksa peta menyesuaikan ulang ukurannya setelah setengah detik
+        // Ini mencegah masalah peta yang terpotong atau "abu-abu" saat dimuat
+        setTimeout(function() {
+            map.invalidateSize();
+        }, 500);
+    });
+</script>
 {% endblock %}

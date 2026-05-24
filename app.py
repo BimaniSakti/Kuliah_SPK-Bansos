@@ -1,7 +1,11 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, send_file, url_for
 from models.data_handler import hapus_wilayah, load_data, simpan_hasil_model, tambah_wilayah
 from models.spk_machine import calculate_saw, apply_kmeans 
-from models.ahp_engine import calculate_ahp # Import fungsi kalkulator AHP
+from models.ahp_engine import calculate_ahp
+
+import io
+import numpy as np
+from sklearn.metrics import silhouette_score
 
 
 app = Flask(__name__)
@@ -36,12 +40,40 @@ def ranking():
     df = load_data()
     df_jabar = df[df['Provinsi'] == 'JAWA BARAT'].copy()
     
-    # Hanya urutkan jika kolom Skor_SAW sudah terbuat di DB (sudah dieksekusi admin)
-    if 'Skor_SAW' in df_jabar.columns:
+    sil_score = 0
+    if 'Skor_SAW' in df_jabar.columns and 'Kategori_Prioritas' in df_jabar.columns:
         df_jabar = df_jabar.sort_values(by='Skor_SAW', ascending=False)
         
+        # Kalkulasi ulang Silhouette Score khusus untuk subset Jawa Barat
+        X = df_jabar[['Skor_SAW']].values
+        # Mengubah teks kategori menjadi angka agar bisa dihitung sklearn
+        labels = df_jabar['Kategori_Prioritas'].astype('category').cat.codes
+        if len(np.unique(labels)) > 1:
+            sil_score = round(silhouette_score(X, labels), 3)
+            
     data_jabar = df_jabar.to_dict(orient='records')
-    return render_template('ranking.html', data_wilayah=data_jabar)
+    return render_template('ranking.html', data_wilayah=data_jabar, sil_score=sil_score)
+
+@app.route('/export/excel')
+def export_excel():
+    """Rute untuk mengunduh tabel ranking sebagai file CSV/Excel"""
+    df = load_data()
+    df_jabar = df[df['Provinsi'] == 'JAWA BARAT'].copy()
+    
+    if 'Skor_SAW' in df_jabar.columns:
+        df_jabar = df_jabar.sort_values(by='Skor_SAW', ascending=False)
+        # Pilih kolom yang penting saja untuk di-export
+        kolom_export = ['Provinsi', 'Kab/Kota', 'P0', 'Skor_SAW', 'Kategori_Prioritas']
+        df_export = df_jabar[kolom_export]
+    else:
+        df_export = df_jabar
+        
+    # Menggunakan BytesIO agar file tidak perlu disimpan di harddisk server
+    output = io.BytesIO()
+    df_export.to_csv(output, index=False)
+    output.seek(0)
+    
+    return send_file(output, mimetype='text/csv', as_attachment=True, download_name='Ranking_Bansos_Jabar.csv')
 
 # ==========================================
 # ROUTING AREA ADMIN

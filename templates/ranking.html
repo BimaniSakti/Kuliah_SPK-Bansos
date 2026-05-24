@@ -1,33 +1,40 @@
 {% extends 'base.html' %}
 
-{% block title %}Eksplorasi Perangkingan - SPK Bansos Jabar{% endblock %}
+{% block title %}Rangking Wilayah - SPK Bansos Jabar{% endblock %}
 
 {% block content %}
+<style>
+    /* CSS untuk menyembunyikan elemen yang tidak perlu saat dicetak jadi PDF */
+    @media print {
+        .navbar, footer, .d-print-none { display: none !important; }
+        .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+    }
+</style>
+
 <div class="row mb-4 align-items-end">
     <div class="col-md-8">
-        <span class="text-muted text-uppercase small font-monospace">DATA_STATUS: [FINALIZED] // VERSION: 2.43-BETA</span>
-        <h2 class="fw-bold text-dark mt-1">EKSPLORASI_PERANGKINGAN</h2>
+        <h2 class="fw-bold text-dark mt-1">Rangking Wilayah</h2>
         <p class="text-secondary mb-0">Visualisasi data hasil *Simple Additive Weighting* (SAW) untuk penentuan prioritas bantuan sosial tingkat provinsi berdasarkan kriteria model terbaru.</p>
     </div>
     <div class="col-md-4 text-md-end mt-3 mt-md-0">
-        <button class="btn btn-outline-dark me-2"><i class="bi bi-file-earmark-pdf"></i> Cetak PDF</button>
-        <button class="btn btn-outline-success"><i class="bi bi-file-earmark-excel"></i> Export Excel</button>
+        <button class="btn btn-outline-dark me-2" onclick="window.print()"><i class="bi bi-printer"></i> Cetak PDF</button>
+        <a href="/export/excel" class="btn btn-outline-success"><i class="bi bi-file-earmark-excel"></i> Export Excel</a>
     </div>
 </div>
 
-<div class="card border-0 shadow-sm p-3 mb-4 bg-white">
+<div class="card border-0 shadow-sm p-3 mb-4 bg-white d-print-none">
     <div class="row g-3 align-items-center">
         <div class="col-md-6">
             <div class="input-group">
                 <span class="input-group-text bg-light border-0"><i class="bi bi-search"></i></span>
-                <input type="text" class="form-control bg-light border-0" placeholder="Cari nama kabupaten atau kota...">
+                <input type="text" id="searchInput" onkeyup="cariWilayah()" class="form-control bg-light border-0" placeholder="Cari nama kabupaten atau kota...">
             </div>
         </div>
         <div class="col-md-4">
-            <span class="badge bg-dark p-2 rounded-3 me-2">FILTER: PRIORITAS TINGGI <i class="bi bi-x-circle ms-1"></i></span>
-        </div>
-        <div class="col-md-2 text-end">
-            <button class="btn btn-light w-100"><i class="bi bi-sliders"></i> Advanced</button>
+            <button id="btnFilterTinggi" onclick="filterPrioritas('Prioritas Tinggi')" class="btn btn-dark rounded-3 me-2">
+                FILTER: PRIORITAS TINGGI
+            </button>
+            <button onclick="resetFilter()" class="btn btn-light text-secondary rounded-3">RESET</button>
         </div>
     </div>
 </div>
@@ -44,7 +51,7 @@
                     <th class="pe-4">KATEGORI PRIORITAS</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="tableBody">
                 {% for row in data_wilayah %}
                 <tr>
                     <td class="ps-4 fw-bold">{{ loop.index }}</td>
@@ -98,4 +105,55 @@
         </div>
     </div>
 </div>
+
+<script>
+    // FUNGSI 1: Fitur Search/Pencarian Kabupaten
+    function cariWilayah() {
+        let input = document.getElementById("searchInput").value.toUpperCase();
+        let tableBody = document.getElementById("tableBody");
+        let tr = tableBody.getElementsByTagName("tr");
+
+        for (let i = 0; i < tr.length; i++) {
+            let tdKota = tr[i].getElementsByTagName("td")[2]; // Kolom ke-3 adalah Kab/Kota
+            if (tdKota) {
+                let txtValue = tdKota.textContent || tdKota.innerText;
+                if (txtValue.toUpperCase().indexOf(input) > -1) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    // FUNGSI 2: Fitur Filter Prioritas Tinggi
+    function filterPrioritas(kategori) {
+        let tableBody = document.getElementById("tableBody");
+        let tr = tableBody.getElementsByTagName("tr");
+
+        for (let i = 0; i < tr.length; i++) {
+            let tdKategori = tr[i].getElementsByTagName("td")[4]; // Kolom ke-5 adalah Kategori
+            if (tdKategori) {
+                let txtValue = tdKategori.textContent || tdKategori.innerText;
+                
+                // PERBAIKAN: Ubah teks di tabel menjadi huruf besar semua sebelum dicocokkan
+                if (txtValue.toUpperCase().includes(kategori.toUpperCase())) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+    }
+
+    // FUNGSI 3: Mereset Filter
+    function resetFilter() {
+        document.getElementById("searchInput").value = "";
+        let tableBody = document.getElementById("tableBody");
+        let tr = tableBody.getElementsByTagName("tr");
+        for (let i = 0; i < tr.length; i++) {
+            tr[i].style.display = "";
+        }
+    }
+</script>
 {% endblock %}

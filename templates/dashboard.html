@@ -3,9 +3,17 @@
 {% block title %}Dashboard Statistik - SPK Bansos Jabar{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #mapDashboard {
+        z-index: 1; 
+        border-radius: 0.5rem; 
+        border: 1px solid #dee2e6;
+    }
+</style>
+
 <div class="row mb-4">
     <div class="col-12">
-        <span class="text-muted text-uppercase small font-monospace">System_Admin // Dashboard</span>
         <h2 class="fw-bold text-dark mt-1">STATISTIK DISTRIBUSI BANSOS</h2>
         <p class="text-secondary">Transparansi alokasi bantuan sosial berdasarkan sistem pendukung keputusan. Data diperbarui secara real-time berdasarkan validasi lapangan di tiap sektor.</p>
     </div>
@@ -67,12 +75,13 @@
     </div>
     
     <div class="col-lg-5">
-        <div class="card border-0 shadow-sm p-4 rounded-4 h-100 bg-white text-center d-flex flex-column justify-content-center align-items-center">
-            <div class="border border-2 border-dashed rounded-4 p-5 w-100 h-100 d-flex flex-column justify-content-center align-items-center bg-light">
-                <i class="bi bi-map-fill text-secondary display-4 mb-3"></i>
-                <h5 class="fw-bold text-dark">MAP_REGION_01</h5>
-                <p class="text-muted small px-3">Visualisasi Geospasial Klaster Kemiskinan Jawa Barat</p>
-                <span class="badge bg-dark font-monospace mt-2">COORD: JABAR_114.0000</span>
+        <div class="card border-0 shadow-sm p-4 rounded-4 h-100 bg-white">
+            <h5 class="fw-bold text-dark mb-4">Peta Persebaran Sektor</h5>
+            <div id="mapDashboard" style="height: 300px; width: 100%;"></div>
+            <div class="mt-3 small text-secondary d-flex justify-content-between">
+                <span><i class="bi bi-circle-fill text-danger"></i> Tinggi</span>
+                <span><i class="bi bi-circle-fill text-warning"></i> Sedang</span>
+                <span><i class="bi bi-circle-fill text-success"></i> Rendah</span>
             </div>
         </div>
     </div>
@@ -104,6 +113,33 @@
                 x: { grid: { display: false } }
             }
         }
+    });
+</script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Inisialisasi peta di koordinat Jawa Barat
+        var mapDash = L.map('mapDashboard').setView([-6.9175, 107.6191], 7.5);
+
+        // Tema peta CartoDB Positron (Terang & Minimalis)
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; OpenStreetMap &copy; CARTO',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }).addTo(mapDash);
+
+        // Menambahkan beberapa titik simulasi persebaran (Opsional)
+        // Jika nanti kamu punya koordinat lat/long tiap kabupaten di database, bisa di-looping di sini menggunakan Jinja2
+        L.circleMarker([-6.9763, 108.4764], { radius: 8, color: '#dc3545', fillOpacity: 0.7 }).addTo(mapDash).bindPopup("<b>Kab. Kuningan</b>");
+        L.circleMarker([-6.8242, 107.1397], { radius: 8, color: '#ffc107', fillOpacity: 0.7 }).addTo(mapDash).bindPopup("<b>Kab. Cianjur</b>");
+        L.circleMarker([-6.9175, 107.6191], { radius: 8, color: '#198754', fillOpacity: 0.7 }).addTo(mapDash).bindPopup("<b>Kota Bandung</b>");
+        L.circleMarker([-6.2333, 106.9833], { radius: 8, color: '#198754', fillOpacity: 0.7 }).addTo(mapDash).bindPopup("<b>Kota Bekasi</b>");
+
+        // Memaksa peta menyesuaikan ukuran setelah dimuat agar tidak error (kotak abu-abu)
+        setTimeout(function() {
+            mapDash.invalidateSize();
+        }, 500);
     });
 </script>
 {% endblock %}
