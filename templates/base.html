@@ -36,11 +36,26 @@
                     <li class="nav-item"><a class="nav-link" href="/">Landing Page</a></li>
                     <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" href="/ranking">Ranking Wilayah</a></li>
-                    <li class="nav-item">
-                        <a class="btn btn-light text-primary ms-3 fw-bold" href="/admin">
-                            <i class="bi bi-person-lock"></i> Admin Access
-                        </a>
-                    </li>
+                    {% if session.get('logged_in') %}
+                        <li class="nav-item dropdown ms-2">
+                            <a class="btn btn-warning fw-bold dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-gear-fill"></i> Panel Admin
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-2">
+                                <li><a class="dropdown-item" href="/admin">Manajemen Data</a></li>
+                                <li><a class="dropdown-item" href="/admin/ahp">Konfigurasi AHP</a></li>
+                                <li><a class="dropdown-item" href="/admin/model">Eksekusi Model</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item text-danger fw-bold" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="btn btn-light text-primary ms-3 fw-bold" href="/login">
+                                <i class="bi bi-person-lock"></i> Admin Access
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>

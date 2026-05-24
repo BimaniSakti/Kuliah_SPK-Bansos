@@ -3,13 +3,14 @@
 {% block title %}Manajemen Data - Admin Panel{% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
 <div class="row mb-4 align-items-center">
     <div class="col-md-6">
-        <span class="text-muted text-uppercase small font-monospace">MODULE // DATA MANAGEMENT</span>
-        <h2 class="fw-bold text-dark mt-1">DATA_WILAYAH_REGISTRY</h2>
+        <h2 class="fw-bold text-dark mt-1">Data Wilayah</h2>
     </div>
     <div class="col-md-6 text-md-end">
-        <button class="btn btn-outline-primary me-2"><i class="bi bi-cloud-upload"></i> Import CSV Dataset</button>
+        <button class="btn btn-outline-primary me-2" data-bs-toggle="modal" data-bs-target="#modalImport"><i class="bi bi-cloud-upload"></i> Import CSV Dataset</button>
         <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalTambah"><i class="bi bi-plus-circle"></i> Tambah Data Manual</button>
     </div>
 </div>
@@ -17,25 +18,25 @@
 <div class="row g-3 mb-4 text-center">
     <div class="col-6 col-md-3">
         <div class="bg-white p-3 rounded-3 shadow-sm">
-            <h4 class="fw-bold text-dark m-0">12.45%</h4>
+            <h4 class="fw-bold text-dark m-0">{{ avg_p0 }}%</h4>
             <small class="text-muted text-uppercase font-monospace small">Rata-rata P0 Jabar</small>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="bg-white p-3 rounded-3 shadow-sm">
-            <h4 class="fw-bold text-dark m-0">9.2 Yrs</h4>
+            <h4 class="fw-bold text-dark m-0">{{ avg_sekolah }} Yrs</h4>
             <small class="text-muted text-uppercase font-monospace small">Rata-rata Lama Sekolah</small>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="bg-white p-3 rounded-3 shadow-sm">
-            <h4 class="fw-bold text-dark m-0">5.12%</h4>
+            <h4 class="fw-bold text-dark m-0">{{ avg_tpt }}%</h4>
             <small class="text-muted text-uppercase font-monospace small">Tingkat Pengangguran</small>
         </div>
     </div>
     <div class="col-6 col-md-3">
         <div class="bg-white p-3 rounded-3 shadow-sm">
-            <h4 class="fw-bold text-dark m-0">88.3%</h4>
+            <h4 class="fw-bold text-dark m-0">{{ avg_sanitasi }}%</h4>
             <small class="text-muted text-uppercase font-monospace small">Akses Sanitasi Layak</small>
         </div>
     </div>
@@ -44,16 +45,12 @@
 <div class="card border-0 shadow-sm bg-white rounded-4 overflow-hidden">
     <div class="card-header bg-white border-0 py-3">
         <div class="row align-items-center">
-            <div class="col-md-4">
-                <h6 class="fw-bold m-0 text-muted text-uppercase font-monospace small">RAW_INDICATOR_MATRIX</h6>
-            </div>
-            <div class="col-md-8 text-md-end">
-                <input type="text" class="form-control form-control-sm d-inline-block w-50" placeholder="Filter berdasarkan nama wilayah...">
+            <div class="col-md-8 text-md-start">
             </div>
         </div>
     </div>
     <div class="table-responsive">
-        <table class="table table-sm table-hover align-middle mb-0 text-center text-nowrap">
+        <table id="tabelWilayah" class="table table-sm table-hover align-middle mb-0 text-center text-nowrap">
             <thead class="table-light border-bottom">
                 <tr class="small text-uppercase font-monospace text-muted">
                     <th class="text-start ps-4">WILAYAH</th>
@@ -80,7 +77,7 @@
                     <td>{{ row['Air_Minum'] }}%</td>
                     <td class="pe-4">
                         <div class="d-flex justify-content-end">
-                            <button class="btn btn-sm btn-link text-decoration-none text-primary p-0 me-3">EDIT</button>
+                            <button onclick="bukaModalEdit('{{ row['Provinsi'] }}', '{{ row['Kab/Kota'] }}', {{ row['P0'] }}, {{ row['Lama_Sekolah'] }}, {{ row['Pengeluaran'] }}, {{ row['IPM'] }}, {{ row['Harapan_Hidup'] }}, {{ row['Sanitasi'] }}, {{ row['Air_Minum'] }}, {{ row['TPT'] }}, {{ row['TPAK'] }})" class="btn btn-sm btn-link text-decoration-none text-primary p-0 me-3">EDIT</button>
                             <form action="/admin/hapus/{{ row['Kab/Kota'] }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data {{ row['Kab/Kota'] }}?');">
                                 <button type="submit" class="btn btn-sm btn-link text-decoration-none text-danger p-0">HAPUS</button>
                             </form>
@@ -147,4 +144,91 @@
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalImport" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="/admin/import" method="POST" enctype="multipart/form-data">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">Import Dataset CSV Baru</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="alert alert-warning small">
+                        <strong>Perhatian:</strong> Mengunggah CSV baru akan me-replace seluruh data wilayah di database saat ini.
+                    </div>
+                    <input class="form-control" type="file" name="file_csv" accept=".csv" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Unggah & Replace Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEdit" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-light">
+                <h5 class="modal-title fw-bold">Edit Data Wilayah: <span id="editTitle"></span></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="/admin/edit" method="POST">
+                <div class="modal-body row g-3 p-4">
+                    <input type="hidden" id="edit_kab_kota" name="kab_kota">
+                    
+                    <div class="col-md-12">
+                        <label class="form-label small fw-bold">PROVINSI</label>
+                        <input type="text" class="form-control" id="edit_provinsi" name="provinsi" required>
+                    </div>
+                    <div class="col-md-4"><label class="small fw-bold">P0 (%)</label><input type="number" step="any" class="form-control" id="edit_p0" name="p0"></div>
+                    <div class="col-md-4"><label class="small fw-bold">LAMA SEKOLAH</label><input type="number" step="any" class="form-control" id="edit_lama" name="lama_sekolah"></div>
+                    <div class="col-md-4"><label class="small fw-bold">PENGELUARAN</label><input type="number" step="any" class="form-control" id="edit_pengeluaran" name="pengeluaran"></div>
+                    <div class="col-md-3"><label class="small fw-bold">IPM</label><input type="number" step="any" class="form-control" id="edit_ipm" name="ipm"></div>
+                    <div class="col-md-3"><label class="small fw-bold">HARAPAN HIDUP</label><input type="number" step="any" class="form-control" id="edit_harapan" name="harapan_hidup"></div>
+                    <div class="col-md-3"><label class="small fw-bold">SANITASI</label><input type="number" step="any" class="form-control" id="edit_sanitasi" name="sanitasi"></div>
+                    <div class="col-md-3"><label class="small fw-bold">AIR MINUM</label><input type="number" step="any" class="form-control" id="edit_air" name="air_minum"></div>
+                    <input type="hidden" id="edit_tpt" name="tpt"><input type="hidden" id="edit_tpak" name="tpak">
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="submit" class="btn btn-primary"><i class="bi bi-save"></i> Update Data</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Mengubah tabel HTML biasa menjadi DataTables yang canggih (Otomatis ada Paginasi 10 baris & Search!)
+        $('#tabelWilayah').DataTable({
+            "pageLength": 10,
+            "ordering": false // Mematikan sorting otomatis agar rapi
+        });
+    });
+
+    // Fungsi untuk mengisi nilai ke dalam form modal edit
+    function bukaModalEdit(prov, kab, p0, lama, pengeluaran, ipm, harapan, sanitasi, air, tpt, tpak) {
+        document.getElementById('editTitle').innerText = kab;
+        document.getElementById('edit_kab_kota').value = kab;
+        document.getElementById('edit_provinsi').value = prov;
+        document.getElementById('edit_p0').value = p0;
+        document.getElementById('edit_lama').value = lama;
+        document.getElementById('edit_pengeluaran').value = pengeluaran;
+        document.getElementById('edit_ipm').value = ipm;
+        document.getElementById('edit_harapan').value = harapan;
+        document.getElementById('edit_sanitasi').value = sanitasi;
+        document.getElementById('edit_air').value = air;
+        document.getElementById('edit_tpt').value = tpt;
+        document.getElementById('edit_tpak').value = tpak;
+        
+        // Memunculkan Modal Bootstrap
+        var modal = new bootstrap.Modal(document.getElementById('modalEdit'));
+        modal.show();
+    }
+</script>
 {% endblock %}

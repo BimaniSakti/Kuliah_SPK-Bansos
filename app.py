@@ -1,5 +1,5 @@
-from flask import Flask, render_template, request, redirect, send_file, url_for
-from models.data_handler import hapus_wilayah, load_data, simpan_hasil_model, tambah_wilayah
+from flask import Flask, render_template, request, redirect, send_file, url_for, session, flash
+from models.data_handler import hapus_wilayah, load_data, simpan_hasil_model, tambah_wilayah, edit_wilayah, import_csv_ke_db
 from models.spk_machine import calculate_saw, apply_kmeans 
 from models.ahp_engine import calculate_ahp
 
@@ -9,6 +9,37 @@ from sklearn.metrics import silhouette_score
 
 
 app = Flask(__name__)
+
+app.secret_key = 'bansos_jabar_rahasia_123'
+
+
+# ==========================================
+# ROUTING OTENTIKASI (LOGIN & LOGOUT)
+# ==========================================
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    # Jika sudah login, langsung lempar ke admin_data
+    if session.get('logged_in'):
+        return redirect(url_for('admin_data'))
+        
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        # Hardcode kredensial admin (Bisa diubah sesuai keinginanmu)
+        if username == 'admin' and password == 'admin123':
+            session['logged_in'] = True
+            return redirect(url_for('admin_data'))
+        else:
+            flash('Username atau Password salah!', 'danger')
+            
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('logged_in', None)
+    return redirect(url_for('index'))
+
 
 # ==========================================
 # ROUTING AREA PUBLIK
@@ -80,12 +111,99 @@ def export_excel():
 # ==========================================
 @app.route('/admin')
 def admin_data():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    
     df = load_data()
+    
+    # Menghitung Statistik Khusus Jawa Barat (Sesuai UI)
+    df_jabar = df[df['Provinsi'] == 'JAWA BARAT']
+    if not df_jabar.empty:
+        avg_p0 = round(df_jabar['P0'].mean(), 2)
+        avg_sekolah = round(df_jabar['Lama_Sekolah'].mean(), 2)
+        avg_tpt = round(df_jabar['TPT'].mean(), 2)
+        avg_sanitasi = round(df_jabar['Sanitasi'].mean(), 2)
+    else:
+        avg_p0 = avg_sekolah = avg_tpt = avg_sanitasi = 0
+        
     data_nasional = df.to_dict(orient='records')
-    return render_template('admin_data.html', data_wilayah=data_nasional, total_data=len(data_nasional))
+    
+    # Melempar angka statistik ke HTML
+    return render_template('admin_data.html', 
+                           data_wilayah=data_nasional,
+                           avg_p0=avg_p0, avg_sekolah=avg_sekolah,
+                           avg_tpt=avg_tpt, avg_sanitasi=avg_sanitasi)
+    
+@app.route('/admin/tambah', methods=['POST'])
+def admin_tambah():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    
+    # Menangkap semua inputan dari Form Tambah Data HTML
+    data_baru = {
+        'provinsi': request.form.get('provinsi'),
+        'kab_kota': request.form.get('kab_kota'),
+        'p0': float(request.form.get('p0', 0)),
+        'lama_sekolah': float(request.form.get('lama_sekolah', 0)),
+        'pengeluaran': float(request.form.get('pengeluaran', 0)),
+        'ipm': float(request.form.get('ipm', 0)),
+        'harapan_hidup': float(request.form.get('harapan_hidup', 0)),
+        'sanitasi': float(request.form.get('sanitasi', 0)),
+        'air_minum': float(request.form.get('air_minum', 0)),
+        'tpt': float(request.form.get('tpt', 0)),
+        'tpak': float(request.form.get('tpak', 0))
+    }
+    # Panggil fungsi SQL
+    tambah_wilayah(data_baru)
+    # Refresh halaman tabel secara otomatis
+    return redirect(url_for('admin_data'))
+
+@app.route('/admin/edit', methods=['POST'])
+def admin_edit():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+        
+    data_edit = {
+        'provinsi': request.form.get('provinsi'),
+        'kab_kota': request.form.get('kab_kota'), # Kab/Kota digunakan sebagai kunci pencarian
+        'p0': float(request.form.get('p0', 0)),
+        'lama_sekolah': float(request.form.get('lama_sekolah', 0)),
+        'pengeluaran': float(request.form.get('pengeluaran', 0)),
+        'ipm': float(request.form.get('ipm', 0)),
+        'harapan_hidup': float(request.form.get('harapan_hidup', 0)),
+        'sanitasi': float(request.form.get('sanitasi', 0)),
+        'air_minum': float(request.form.get('air_minum', 0)),
+        'tpt': float(request.form.get('tpt', 0)),
+        'tpak': float(request.form.get('tpak', 0))
+    }
+    edit_wilayah(data_edit)
+    return redirect(url_for('admin_data'))
+
+@app.route('/admin/hapus/<kab_kota>', methods=['POST'])
+def admin_hapus(kab_kota):
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+        
+    # Panggil fungsi hapus SQL
+    hapus_wilayah(kab_kota)
+    return redirect(url_for('admin_data'))
+    
+@app.route('/admin/import', methods=['POST'])
+def admin_import():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+        
+    # Menangkap file CSV yang diunggah Admin
+    file = request.files.get('file_csv')
+    if file and file.filename.endswith('.csv'):
+        import_csv_ke_db(file)
+    return redirect(url_for('admin_data'))
 
 @app.route('/admin/ahp', methods=['GET', 'POST'])
 def admin_ahp():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+    
     ahp_result = None
     
     if request.method == 'POST':
@@ -112,37 +230,15 @@ def admin_ahp():
 
 @app.route('/admin/model')
 def admin_model():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
     return render_template('admin_model.html')
-
-@app.route('/admin/tambah', methods=['POST'])
-def admin_tambah():
-    # Menangkap semua inputan dari Form Tambah Data HTML
-    data_baru = {
-        'provinsi': request.form.get('provinsi'),
-        'kab_kota': request.form.get('kab_kota'),
-        'p0': float(request.form.get('p0', 0)),
-        'lama_sekolah': float(request.form.get('lama_sekolah', 0)),
-        'pengeluaran': float(request.form.get('pengeluaran', 0)),
-        'ipm': float(request.form.get('ipm', 0)),
-        'harapan_hidup': float(request.form.get('harapan_hidup', 0)),
-        'sanitasi': float(request.form.get('sanitasi', 0)),
-        'air_minum': float(request.form.get('air_minum', 0)),
-        'tpt': float(request.form.get('tpt', 0)),
-        'tpak': float(request.form.get('tpak', 0))
-    }
-    # Panggil fungsi SQL
-    tambah_wilayah(data_baru)
-    # Refresh halaman tabel secara otomatis
-    return redirect(url_for('admin_data'))
-
-@app.route('/admin/hapus/<kab_kota>', methods=['POST'])
-def admin_hapus(kab_kota):
-    # Panggil fungsi hapus SQL
-    hapus_wilayah(kab_kota)
-    return redirect(url_for('admin_data'))
 
 @app.route('/admin/run_pipeline', methods=['POST'])
 def admin_run_pipeline():
+    if not session.get('logged_in'):
+        return redirect(url_for('login'))
+        
     # 1. Tarik data mentah dari DB
     df = load_data()
     
