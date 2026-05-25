@@ -63,6 +63,14 @@
         <div class="card border-0 shadow-sm p-4 bg-white rounded-4 h-100">
             <h6 class="fw-bold text-dark mb-4">02. PERBANDINGAN_BERPASANGAN</h6>
             
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} small py-2 mb-3">{{ message }}</div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+
             <form method="POST" action="/admin/ahp">
                 
                 <div class="mb-4">
@@ -71,16 +79,20 @@
                         <span>Rata-rata Lama Sekolah</span>
                     </div>
                     <div class="btn-group w-100" role="group">
-                        <input type="radio" class="btn-check" name="pair1" id="p1_9" value="9">
-                        <label class="btn btn-outline-secondary btn-sm" for="p1_9">9</label>
-                        <input type="radio" class="btn-check" name="pair1" id="p1_5" value="5">
-                        <label class="btn btn-outline-secondary btn-sm" for="p1_5">5</label>
-                        <input type="radio" class="btn-check" name="pair1" id="p1_1" value="1" checked>
-                        <label class="btn btn-primary btn-sm" for="p1_1">1</label>
-                        <input type="radio" class="btn-check" name="pair1" id="p1_e5" value="0.2">
-                        <label class="btn btn-outline-secondary btn-sm" for="p1_e5">1/5</label>
-                        <input type="radio" class="btn-check" name="pair1" id="p1_e9" value="0.1111">
-                        <label class="btn btn-outline-secondary btn-sm" for="p1_e9">1/9</label>
+                        <input type="radio" class="btn-check" name="pair1" id="p1_9" value="9" {% if p1 == 9 %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p1_9">9</label>
+                        
+                        <input type="radio" class="btn-check" name="pair1" id="p1_5" value="5" {% if p1 == 5 %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p1_5">5</label>
+                        
+                        <input type="radio" class="btn-check" name="pair1" id="p1_1" value="1" {% if p1 == 1 or p1 is none %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p1_1">1</label>
+                        
+                        <input type="radio" class="btn-check" name="pair1" id="p1_e5" value="0.2" {% if p1 == 0.2 %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p1_e5">1/5</label>
+                        
+                        <input type="radio" class="btn-check" name="pair1" id="p1_e9" value="0.1111" {% if p1 == 0.1111 %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p1_e9">1/9</label>
                     </div>
                 </div>
 
@@ -90,16 +102,20 @@
                         <span>Pengeluaran per Kapita</span>
                     </div>
                     <div class="btn-group w-100" role="group">
-                        <input type="radio" class="btn-check" name="pair2" id="p2_9" value="9">
-                        <label class="btn btn-outline-secondary btn-sm" for="p2_9">9</label>
-                        <input type="radio" class="btn-check" name="pair2" id="p2_5" value="5" checked>
-                        <label class="btn btn-primary btn-sm" for="p2_5">5</label>
-                        <input type="radio" class="btn-check" name="pair2" id="p2_1" value="1">
-                        <label class="btn btn-outline-secondary btn-sm" for="p2_1">1</label>
-                        <input type="radio" class="btn-check" name="pair2" id="p2_e5" value="0.2">
-                        <label class="btn btn-outline-secondary btn-sm" for="p2_e5">1/5</label>
-                        <input type="radio" class="btn-check" name="pair2" id="p2_e9" value="0.1111">
-                        <label class="btn btn-outline-secondary btn-sm" for="p2_e9">1/9</label>
+                        <input type="radio" class="btn-check" name="pair2" id="p2_9" value="9" {% if p2 == 9 %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p2_9">9</label>
+                        
+                        <input type="radio" class="btn-check" name="pair2" id="p2_5" value="5" {% if p2 == 5 or p2 is none %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p2_5">5</label>
+                        
+                        <input type="radio" class="btn-check" name="pair2" id="p2_1" value="1" {% if p2 == 1 %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p2_1">1</label>
+                        
+                        <input type="radio" class="btn-check" name="pair2" id="p2_e5" value="0.2" {% if p2 == 0.2 %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p2_e5">1/5</label>
+                        
+                        <input type="radio" class="btn-check" name="pair2" id="p2_e9" value="0.1111" {% if p2 == 0.1111 %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p2_e9">1/9</label>
                     </div>
                 </div>
 
@@ -109,22 +125,26 @@
                         <span>Pengeluaran per Kapita</span>
                     </div>
                     <div class="btn-group w-100" role="group">
-                        <input type="radio" class="btn-check" name="pair3" id="p3_9" value="9">
-                        <label class="btn btn-outline-secondary btn-sm" for="p3_9">9</label>
-                        <input type="radio" class="btn-check" name="pair3" id="p3_5" value="5">
-                        <label class="btn btn-outline-secondary btn-sm" for="p3_5">5</label>
-                        <input type="radio" class="btn-check" name="pair3" id="p3_1" value="1" checked>
-                        <label class="btn btn-primary btn-sm" for="p3_1">1</label>
-                        <input type="radio" class="btn-check" name="pair3" id="p3_e5" value="0.2">
-                        <label class="btn btn-outline-secondary btn-sm" for="p3_e5">1/5</label>
-                        <input type="radio" class="btn-check" name="pair3" id="p3_e9" value="0.1111">
-                        <label class="btn btn-outline-secondary btn-sm" for="p3_e9">1/9</label>
+                        <input type="radio" class="btn-check" name="pair3" id="p3_9" value="9" {% if p3 == 9 %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p3_9">9</label>
+                        
+                        <input type="radio" class="btn-check" name="pair3" id="p3_5" value="5" {% if p3 == 5 %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p3_5">5</label>
+                        
+                        <input type="radio" class="btn-check" name="pair3" id="p3_1" value="1" {% if p3 == 1 or p3 is none %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p3_1">1</label>
+                        
+                        <input type="radio" class="btn-check" name="pair3" id="p3_e5" value="0.2" {% if p3 == 0.2 %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p3_e5">1/5</label>
+                        
+                        <input type="radio" class="btn-check" name="pair3" id="p3_e9" value="0.1111" {% if p3 == 0.1111 %}checked{% endif %}>
+                        <label class="btn btn-outline-primary btn-sm" for="p3_e9">1/9</label>
                     </div>
                 </div>
                 
                 <div class="d-flex gap-2 mt-auto">
-                    <button type="submit" class="btn btn-secondary w-50"><i class="bi bi-calculator"></i> Calculate Weights</button>
-                    <button type="button" class="btn btn-dark w-50"><i class="bi bi-hdd-fill"></i> Save Configuration</button>
+                    <button type="submit" name="action" value="calculate" class="btn btn-secondary w-50"><i class="bi bi-calculator"></i> Calculate Weights</button>
+                    <button type="submit" name="action" value="save" class="btn btn-dark w-50"><i class="bi bi-hdd-fill"></i> Save Configuration</button>
                 </div>
             </form>
 

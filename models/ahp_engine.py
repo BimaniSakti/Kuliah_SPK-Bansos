@@ -1,4 +1,6 @@
 import numpy as np
+import json
+import os
 
 def calculate_ahp(matrix):
     """
@@ -55,6 +57,36 @@ def calculate_ahp(matrix):
         "consistency_ratio": round(cr, 4), # Dibulatkan 4 angka di belakang koma
         "is_consistent": is_consistent
     }
+    
+def save_weights(ahp_weights):
+    """Menyimpan 3 bobot pertama hasil AHP ke file JSON"""
+    data = {"ahp_weights": ahp_weights}
+    with open('models/config_bobot.json', 'w') as f:
+        json.dump(data, f)
+
+def load_weights():
+    """
+    Membaca bobot AHP, lalu menggabungkannya dengan 6 kriteria statis lainnya
+    agar totalnya menjadi 9 kriteria (total bobot 1.0) untuk mesin SAW.
+    """
+    # 6 Kriteria sisa (IPM, Harapan_Hidup, Sanitasi, Air, TPT, TPAK)
+    # Total bobot sisa ini adalah 0.55
+    static_weights = [0.15, 0.10, 0.05, 0.05, 0.15, 0.05]
+    
+    try:
+        if os.path.exists('models/config_bobot.json'):
+            with open('models/config_bobot.json', 'r') as f:
+                data = json.load(f)
+                ahp_w = data['ahp_weights']
+                # Karena bobot sisa adalah 0.55, maka jatah 3 bobot pertama adalah 0.45 (1.0 - 0.55)
+                # Kita kalikan hasil AHP (yang totalnya 1.0) dengan 0.45 agar proporsional
+                adjusted_ahp = [w * 0.45 for w in ahp_w]
+                return adjusted_ahp + static_weights
+    except Exception:
+        pass
+        
+    # Jika belum ada file konfigurasi yang disave Admin, gunakan default ini
+    return [0.25, 0.10, 0.10] + static_weights
 
 # ==========================================
 # FUNGSI TESTING (Bisa dijalankan terpisah)

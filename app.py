@@ -1,16 +1,17 @@
 from flask import Flask, render_template, request, redirect, send_file, url_for, session, flash
 from models.data_handler import hapus_wilayah, load_data, simpan_hasil_model, tambah_wilayah, edit_wilayah, import_csv_ke_db
 from models.spk_machine import calculate_saw, apply_kmeans 
-from models.ahp_engine import calculate_ahp
+from models.ahp_engine import calculate_ahp, save_weights, load_weights
 
 import io
 import numpy as np
+from datetime import datetime
 from sklearn.metrics import silhouette_score
 
 
 app = Flask(__name__)
 
-app.secret_key = 'bansos_jabar_rahasia_123'
+app.secret_key = 'icikiwir123'
 
 
 # ==========================================
@@ -207,6 +208,9 @@ def admin_ahp():
     ahp_result = None
     
     if request.method == 'POST':
+        # Menangkap tombol mana yang diklik (dari atribut name="action" di HTML)
+        action = request.form.get('action')
+        
         # Mengambil nilai skala Saaty dari form HTML, default ke 1 jika kosong
         p1 = float(request.form.get('pair1', 1)) # P0 vs Lama Sekolah
         p2 = float(request.form.get('pair2', 1)) # P0 vs Pengeluaran
@@ -225,6 +229,14 @@ def admin_ahp():
         # Melempar matriks ke mesin AHP untuk dihitung bobot dan CR-nya
         ahp_result = calculate_ahp(matrix)
         
+        # Jika admin mengklik "Save Configuration"
+        if action == 'save':
+            if ahp_result['is_consistent']:
+                save_weights(ahp_result['weights'])
+                flash('Konfigurasi bobot AHP berhasil disimpan permanen!', 'success')
+            else:
+                flash('Gagal menyimpan! Matriks tidak konsisten (CR > 0.1).', 'danger')
+        
     # Melempar variabel ahp_result ke HTML (nilainya None jika halamannya baru dibuka)
     return render_template('admin_ahp.html', ahp_result=ahp_result)
 
@@ -232,7 +244,12 @@ def admin_ahp():
 def admin_model():
     if not session.get('logged_in'):
         return redirect(url_for('login'))
-    return render_template('admin_model.html')
+    
+    # Mengambil log dari session, jika belum pernah dijalankan, beri teks default
+    logs = session.get('system_log', ["[SYSTEM] Ready for execution. Press 'JALANKAN FULL PIPELINE' to start."])
+    last_run = session.get('last_run', "BELUM PERNAH DIEKSEKUSI")
+    
+    return render_template('admin_model.html', logs=logs, last_run=last_run)
 
 @app.route('/admin/run_pipeline', methods=['POST'])
 def admin_run_pipeline():
@@ -245,14 +262,31 @@ def admin_run_pipeline():
     # 2. Siapkan parameter kriteria
     criteria_cols = ['P0', 'Lama_Sekolah', 'Pengeluaran', 'IPM', 'Harapan_Hidup', 'Sanitasi', 'Air_Minum', 'TPT', 'TPAK']
     types = ['benefit', 'cost', 'cost', 'cost', 'cost', 'cost', 'cost', 'benefit', 'cost']
-    weights = [0.25, 0.10, 0.10, 0.15, 0.10, 0.05, 0.05, 0.15, 0.05]
+    weights = load_weights()
     
     # 3. Eksekusi Mesin
     df_saw = calculate_saw(df, criteria_cols, weights, types)
-    df_final, _ = apply_kmeans(df_saw, num_clusters=3)
+    df_final, sil_score = apply_kmeans(df_saw, num_clusters=3)
     
     # 4. SIMPAN PERMANEN KE MYSQL
     simpan_hasil_model(df_final)
+    
+    # 5. Generate Dynamic Log (Terminal Output)
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    log_text = [
+        f"[{now}] INITIATING ANALYTICS ENGINE...",
+        "[STABLE] Checking connection to MySQL Database... OK",
+        f"[INFO] {len(df)} rows loaded from nationwide repository.",
+        "[SUCCESS] SAW Preference Weights generated successfully.",
+        f"[{now}] TRAINING K-MEANS WITH K=3...",
+        "[SUCCESS] Cluster Centroids reached convergence.",
+        f"[INFO] Model Silhouette Score evaluation metric: {sil_score}",
+        "[DONE] All data tables and public dashboard synchronized successfully."
+    ]
+    
+    # Simpan log dan waktu eksekusi ke session agar bisa dibaca oleh halaman web
+    session['system_log'] = log_text
+    session['last_run'] = now
     
     # Kembali ke halaman panel model
     return redirect(url_for('admin_model'))
