@@ -63,10 +63,26 @@ def dashboard():
         tinggi = len(df_jabar[df_jabar['Kategori_Prioritas'] == 'Prioritas Tinggi'])
         sedang = len(df_jabar[df_jabar['Kategori_Prioritas'] == 'Prioritas Sedang'])
         rendah = len(df_jabar[df_jabar['Kategori_Prioritas'] == 'Prioritas Rendah'])
+    
+    top_kabupaten = []
+    if 'Skor_SAW' in df_jabar.columns:
+        df_top = df_jabar.sort_values(by='Skor_SAW', ascending=False).head(10)
+        top_kabupaten = df_top[['Kab/Kota', 'Skor_SAW']].to_dict(orient='records')
+    
+    avg_jabar = {}
+    avg_nasional = {}
+    radar_cols = ['P0', 'Lama_Sekolah', 'TPT', 'Sanitasi', 'Air_Minum', 'TPAK']
+    for col in radar_cols:
+        if col in df_jabar.columns:
+            avg_jabar[col] = round(float(df_jabar[col].mean()), 2)
+        if col in df.columns:
+            avg_nasional[col] = round(float(df[col].mean()), 2)
         
     return render_template('dashboard.html', 
                            total_jabar=total_jabar, tinggi=tinggi, 
-                           sedang=sedang, rendah=rendah, total_nasional=total_nasional)
+                           sedang=sedang, rendah=rendah, total_nasional=total_nasional,
+                           top_kabupaten=top_kabupaten,
+                           avg_jabar=avg_jabar, avg_nasional=avg_nasional)
 
 @app.route('/ranking')
 def ranking():
@@ -107,6 +123,50 @@ def export_excel():
     output.seek(0)
     
     return send_file(output, mimetype='text/csv', as_attachment=True, download_name='Ranking_Bansos_Jabar.csv')
+
+@app.route('/rekomendasi')
+def rekomendasi():
+    df = load_data()
+    df_jabar = df[df['Provinsi'] == 'JAWA BARAT'].copy()
+    
+    top5 = []
+    if 'Skor_SAW' in df_jabar.columns and 'Kategori_Prioritas' in df_jabar.columns:
+        df_top5 = df_jabar.sort_values(by='Skor_SAW', ascending=False).head(5)
+        
+        for _, row in df_top5.iterrows():
+            rekomendasi_list = []
+            p0 = float(row.get('P0', 0))
+            tpt = float(row.get('TPT', 0))
+            lama_sekolah = float(row.get('Lama_Sekolah', 0))
+            sanitasi = float(row.get('Sanitasi', 0))
+            air_minum = float(row.get('Air_Minum', 0))
+            
+            if p0 > 5:
+                rekomendasi_list.append('Prioritas penurunan kemiskinan ekstrem')
+            if tpt > 6:
+                rekomendasi_list.append('Prioritas program lapangan kerja')
+            if lama_sekolah < 8:
+                rekomendasi_list.append('Prioritas peningkatan akses pendidikan')
+            if sanitasi < 70:
+                rekomendasi_list.append('Perbaikan infrastruktur sanitasi')
+            if air_minum < 70:
+                rekomendasi_list.append('Peningkatan akses air minum layak')
+            
+            if not rekomendasi_list:
+                rekomendasi_list.append('Pemantauan berkala dan penguatan program existing')
+            
+            top5.append({
+                'nama': row['Kab/Kota'],
+                'skor_saw': round(float(row.get('Skor_SAW', 0)), 4),
+                'p0': round(p0, 2),
+                'tpt': round(tpt, 2),
+                'lama_sekolah': round(lama_sekolah, 2),
+                'sanitasi': round(sanitasi, 2),
+                'air_minum': round(air_minum, 2),
+                'rekomendasi': rekomendasi_list
+            })
+    
+    return render_template('rekomendasi.html', top5=top5)
 
 # ==========================================
 # ROUTING AREA ADMIN

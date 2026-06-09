@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Rekomendasi Kebijakan - SPK Bansos Jabar{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="fw-bold text-dark mt-1">REKOMENDASI KEBIJAKAN</h2>
+        <p class="text-secondary">Analisis otomatis berdasarkan 5 Kabupaten/Kota dengan <strong>Skor SAW Tertinggi</strong>. Rekomendasi dihasilkan dari pemodelan AHP + SAW + K-Means.</p>
+    </div>
+</div>
+
+{% if top5 %}
+{% for item in top5 %}
+<div class="card border-0 shadow-sm rounded-4 mb-4 bg-white">
+    <div class="card-header bg-danger text-white d-flex justify-content-between align-items-center rounded-top-4">
+        <h5 class="mb-0 fw-bold">
+            <i class="bi bi-geo-alt-fill"></i> {{ loop.index }}. {{ item.nama }}
+        </h5>
+        <span class="badge bg-white text-danger fs-6">Skor SAW: {{ item.skor_saw }}</span>
+    </div>
+    <div class="card-body p-4">
+        <div class="row g-3 mb-4">
+            <div class="col-md-2 col-6 text-center">
+                <div class="p-3 rounded-3 bg-danger bg-opacity-10">
+                    <h6 class="text-muted small mb-1">P0 (%)</h6>
+                    <h3 class="fw-bold text-danger mb-0">{{ item.p0 }}</h3>
+                </div>
+            </div>
+            <div class="col-md-2 col-6 text-center">
+                <div class="p-3 rounded-3 bg-warning bg-opacity-10">
+                    <h6 class="text-muted small mb-1">TPT (%)</h6>
+                    <h3 class="fw-bold text-warning mb-0">{{ item.tpt }}</h3>
+                </div>
+            </div>
+            <div class="col-md-2 col-6 text-center">
+                <div class="p-3 rounded-3 bg-info bg-opacity-10">
+                    <h6 class="text-muted small mb-1">Lama Sekolah</h6>
+                    <h3 class="fw-bold text-info mb-0">{{ item.lama_sekolah }} thn</h3>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 text-center">
+                <div class="p-3 rounded-3 bg-success bg-opacity-10">
+                    <h6 class="text-muted small mb-1">Sanitasi (%)</h6>
+                    <h3 class="fw-bold text-success mb-0">{{ item.sanitasi }}</h3>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 text-center">
+                <div class="p-3 rounded-3 bg-primary bg-opacity-10">
+                    <h6 class="text-muted small mb-1">Air Minum (%)</h6>
+                    <h3 class="fw-bold text-primary mb-0">{{ item.air_minum }}</h3>
+                </div>
+            </div>
+        </div>
+
+        <h6 class="fw-bold text-dark mb-3"><i class="bi bi-lightbulb text-warning"></i> Rekomendasi:</h6>
+        <ul class="list-group list-group-flush">
+            {% for rec in item.rekomendasi %}
+            <li class="list-group-item border-0 ps-0">
+                <i class="bi bi-check-circle-fill text-success me-2"></i> {{ rec }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endfor %}
+
+<div class="text-center mt-4 mb-5">
+    <a href="/dashboard" class="btn btn-outline-primary me-2"><i class="bi bi-bar-chart"></i> Kembali ke Dashboard</a>
+    <a href="/ranking" class="btn btn-outline-success"><i class="bi bi-list-ol"></i> Lihat Semua Ranking</a>
+</div>
+
+{% else %}
+<div class="card border-0 shadow-sm rounded-4 p-5 bg-white text-center">
+    <i class="bi bi-exclamation-circle text-warning" style="font-size: 3rem;"></i>
+    <h4 class="mt-3 fw-bold text-dark">Belum Ada Data Rekomendasi</h4>
+    <p class="text-secondary">Silakan jalankan pipeline model terlebih dahulu dari <a href="/admin/model">Panel Admin</a> untuk menghasilkan skor SAW dan kategori prioritas.</p>
+    <a href="/admin/model" class="btn btn-primary mt-2"><i class="bi bi-play-circle"></i> Jalankan Pipeline</a>
+</div>
+{% endif %}
+{% endblock %}
