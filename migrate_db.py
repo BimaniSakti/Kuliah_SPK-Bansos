@@ -1,8 +1,10 @@
 import pandas as pd
+import os
 from sqlalchemy import create_engine
 
 print("Membaca file CSV...")
-df = pd.read_csv('Klasifikasi Tingkat Kemiskinan pada Indonesia.csv')
+_CSV_PATH = os.path.join(os.path.dirname(__file__), 'Klasifikasi Tingkat Kemiskinan pada Indonesia.csv')
+df = pd.read_csv(_CSV_PATH)
 
 # Merapikan nama kolom persis seperti sebelumnya sebelum dimasukkan ke database
 df.rename(columns={
@@ -21,9 +23,8 @@ df.rename(columns={
 
 df.fillna(0, inplace=True)
 
-print("Menyambungkan ke MySQL Laragon...")
-# Format: mysql+pymysql://username:password@host/nama_database
-engine = create_engine('mysql+pymysql://root:@localhost/spk_bansos_jabar')
+print("Menyambungkan ke MySQL...")
+engine = create_engine(os.environ.get('DB_URL', 'mysql+pymysql://root:@localhost/spk_bansos_jabar'))
 
 print("Mentransfer data ke tabel 'data_wilayah'...")
 # Perintah ajaib ini akan otomatis membuat tabel dan mengisi datanya!

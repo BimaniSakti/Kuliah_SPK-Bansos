@@ -2,6 +2,8 @@ import numpy as np
 import json
 import os
 
+_BOBOT_PATH = os.path.join(os.path.dirname(__file__), 'config_bobot.json')
+
 def calculate_ahp(matrix):
     """
     Menghitung bobot prioritas dan Consistency Ratio (CR) menggunakan metode AHP.
@@ -61,7 +63,7 @@ def calculate_ahp(matrix):
 def save_weights(ahp_weights):
     """Menyimpan 3 bobot pertama hasil AHP ke file JSON"""
     data = {"ahp_weights": ahp_weights}
-    with open('models/config_bobot.json', 'w') as f:
+    with open(_BOBOT_PATH, 'w') as f:
         json.dump(data, f)
 
 def load_weights():
@@ -74,14 +76,13 @@ def load_weights():
     static_weights = [0.15, 0.10, 0.05, 0.05, 0.15, 0.05]
     
     try:
-        if os.path.exists('models/config_bobot.json'):
-            with open('models/config_bobot.json', 'r') as f:
-                data = json.load(f)
-                ahp_w = data['ahp_weights']
-                # Karena bobot sisa adalah 0.55, maka jatah 3 bobot pertama adalah 0.45 (1.0 - 0.55)
-                # Kita kalikan hasil AHP (yang totalnya 1.0) dengan 0.45 agar proporsional
-                adjusted_ahp = [w * 0.45 for w in ahp_w]
-                return adjusted_ahp + static_weights
+        with open(_BOBOT_PATH, 'r') as f:
+            data = json.load(f)
+            ahp_w = data['ahp_weights']
+            # Karena bobot sisa adalah 0.55, maka jatah 3 bobot pertama adalah 0.45 (1.0 - 0.55)
+            # Kita kalikan hasil AHP (yang totalnya 1.0) dengan 0.45 agar proporsional
+            adjusted_ahp = [w * 0.45 for w in ahp_w]
+            return adjusted_ahp + static_weights
     except Exception:
         pass
         

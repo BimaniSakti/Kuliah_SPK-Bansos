@@ -4,6 +4,7 @@ from models.spk_machine import calculate_saw, apply_kmeans
 from models.ahp_engine import calculate_ahp, save_weights, load_weights
 
 import io
+import os
 import numpy as np
 from datetime import datetime
 from sklearn.metrics import silhouette_score
@@ -11,7 +12,7 @@ from sklearn.metrics import silhouette_score
 
 app = Flask(__name__)
 
-app.secret_key = 'icikiwir123'
+app.secret_key = os.environ.get('SECRET_KEY', 'icikiwir123')
 
 
 # ==========================================
@@ -28,7 +29,7 @@ def login():
         password = request.form.get('password')
         
         # Hardcode kredensial admin (Bisa diubah sesuai keinginanmu)
-        if username == 'admin' and password == 'admin123':
+        if username == os.environ.get('ADMIN_USER', 'admin') and password == os.environ.get('ADMIN_PASS', 'admin123'):
             session['logged_in'] = True
             return redirect(url_for('admin_data'))
         else:
