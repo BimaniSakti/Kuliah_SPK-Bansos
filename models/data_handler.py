@@ -4,7 +4,7 @@ from sqlalchemy import create_engine, text
 
 def get_engine():
     # Fungsi bantuan agar tidak perlu menulis ulang koneksi database
-    return create_engine(os.environ.get('DB_URL', 'mysql+pymysql://root:@localhost/spk_bansos_jabar'))
+    return create_engine(os.environ.get('DB_URL', 'sqlite:///data_wilayah.db'))
 
 def load_data():
     engine = get_engine()

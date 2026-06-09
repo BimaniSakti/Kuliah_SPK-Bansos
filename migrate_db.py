@@ -23,8 +23,8 @@ df.rename(columns={
 
 df.fillna(0, inplace=True)
 
-print("Menyambungkan ke MySQL...")
-engine = create_engine(os.environ.get('DB_URL', 'mysql+pymysql://root:@localhost/spk_bansos_jabar'))
+print("Menyambungkan ke database...")
+engine = create_engine(os.environ.get('DB_URL', 'sqlite:///data_wilayah.db'))
 
 print("Mentransfer data ke tabel 'data_wilayah'...")
 # Perintah ajaib ini akan otomatis membuat tabel dan mengisi datanya!
