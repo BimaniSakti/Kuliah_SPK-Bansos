@@ -2,9 +2,12 @@ import pandas as pd
 import os
 from sqlalchemy import create_engine, text
 
+_BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+_DB_PATH = os.path.join(_BASE_DIR, 'data_wilayah.db').replace('\\', '/')
+
 def get_engine():
     # Fungsi bantuan agar tidak perlu menulis ulang koneksi database
-    return create_engine(os.environ.get('DB_URL', 'sqlite:///data_wilayah.db'))
+    return create_engine(os.environ.get('DB_URL', f'sqlite:///{_DB_PATH}'))
 
 def load_data():
     engine = get_engine()

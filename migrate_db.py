@@ -4,6 +4,7 @@ from sqlalchemy import create_engine
 
 print("Membaca file CSV...")
 _CSV_PATH = os.path.join(os.path.dirname(__file__), 'Klasifikasi Tingkat Kemiskinan pada Indonesia.csv')
+_DB_PATH = os.path.join(os.path.dirname(__file__), 'data_wilayah.db').replace('\\', '/')
 df = pd.read_csv(_CSV_PATH)
 
 # Merapikan nama kolom persis seperti sebelumnya sebelum dimasukkan ke database
@@ -24,7 +25,7 @@ df.rename(columns={
 df.fillna(0, inplace=True)
 
 print("Menyambungkan ke database...")
-engine = create_engine(os.environ.get('DB_URL', 'sqlite:///data_wilayah.db'))
+engine = create_engine(os.environ.get('DB_URL', f'sqlite:///{_DB_PATH}'))
 
 print("Mentransfer data ke tabel 'data_wilayah'...")
 # Perintah ajaib ini akan otomatis membuat tabel dan mengisi datanya!
